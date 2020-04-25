@@ -1,11 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
-
 import React, { Component } from 'react';
 import {
   StyleSheet,
@@ -16,7 +8,7 @@ import Button from './components/Button'
 import Display from './components/Display'
 
 const initialState = {
-  displayValue: '0',
+  displayValue: '',
   displayHistory: '',
   atualOperation: ''
 }
@@ -25,11 +17,11 @@ export default class App extends Component {
   state = { ...initialState  }
 
   addDigit = n => {
-    if (n === '.' && this.state.displayValue.includes('.'))
+    if (n === '.' && this.state.displayValue.includes("."))
       return
 
     this.setState({ 
-      displayValue: this.state.displayValue === '0' ? n : this.state.displayValue + n
+      displayValue: this.state.displayValue + n
     })
   }
 
@@ -37,16 +29,27 @@ export default class App extends Component {
     this.setState({...initialState})
   }
 
-  setOperation = operation => {    
+  setOperation = operation => {   
+    if (this.state.displayValue === '' && this.state.atualOperation === '')
+      return
+
+    if (this.state.displayValue === '') {
+      this.setState({
+        atualOperation: operation,
+        displayHistory: this.getPrimeiroNumero() + operation
+      })
+      return
+    }    
+
     this.setState({ 
       displayHistory: this.state.atualOperation === '' ? this.state.displayValue + operation : this.calcula() + operation,
-      displayValue: '0',
+      displayValue: '',
       atualOperation: operation
     })
   }
 
   operaIgual = () => {
-    if (this.state.atualOperation === '')
+    if (this.state.atualOperation === '' || this.state.displayValue === '')
       return
 
     this.setState({
@@ -57,25 +60,11 @@ export default class App extends Component {
   }
 
   calcula = () => {
-    let num1 = this.state.displayHistory.substr(0, this.state.displayHistory.indexOf(this.state.atualOperation))    
-    let retorno = '0'
-    switch (this.state.atualOperation) {
-      case '+': 
-        retorno =  num1 + this.state.displayValue
-        break;
-      case '-': 
-        retorno = num1 - this.state.displayValue
-        break
-      case '*': 
-        retorno = num1 * this.state.displayValue
-        break
-      case '/': 
-        retorno = num1 / this.state.displayValue
-        break
-      default: retorno = 'ERROR'
-      break
-    }
-    return retorno
+    return eval(`${this.getPrimeiroNumero()} ${this.state.atualOperation} ${this.state.displayValue}`).toString()
+  }
+
+  getPrimeiroNumero = () => {
+    return this.state.displayHistory.substr(0, this.state.displayHistory.indexOf(this.state.atualOperation))    
   }
 
   render() {
