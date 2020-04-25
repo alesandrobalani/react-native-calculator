@@ -10,13 +10,19 @@ import Display from './components/Display'
 const initialState = {
   displayValue: '',
   displayHistory: '',
-  atualOperation: ''
+  atualOperation: '',
+  clearDisplay: false
 }
 
 export default class App extends Component {
   state = { ...initialState  }
 
   addDigit = n => {
+     if (this.state.clearDisplay) {
+       this.setState({ displayValue: n, clearDisplay: false})
+       return
+     }
+
     if (n === '.' && this.state.displayValue.includes("."))
       return
 
@@ -55,7 +61,8 @@ export default class App extends Component {
     this.setState({
       displayHistory: '',
       displayValue: this.calcula(),
-      atualOperation: ''
+      atualOperation: '',
+      clearDisplay: true
     })
   }
 
@@ -64,7 +71,7 @@ export default class App extends Component {
   }
 
   getPrimeiroNumero = () => {
-    return this.state.displayHistory.substr(0, this.state.displayHistory.indexOf(this.state.atualOperation))    
+    return this.state.displayHistory.substr(0, this.state.displayHistory.lastIndexOf(this.state.atualOperation))    
   }
 
   render() {
