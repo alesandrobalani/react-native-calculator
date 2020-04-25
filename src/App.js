@@ -15,21 +15,26 @@ import {
 import Button from './components/Button'
 import Display from './components/Display'
 
+const initialState = {
+  displayValue: '0',
+  displayHistory: '',
+  atualOperation: ''
+}
+
 export default class App extends Component {
-  state = {
-    displayValue: '0',
-    displayHistory: '',
-    atualOperation: ''
-  }
+  state = { ...initialState  }
 
   addDigit = n => {
+    if (n === '.' && this.state.displayValue.includes('.'))
+      return
+
     this.setState({ 
       displayValue: this.state.displayValue === '0' ? n : this.state.displayValue + n
     })
   }
 
   clearMemory = () => {
-    this.setState({ displayValue: '0', displayHistory: '', atualOperation: '' })
+    this.setState({...initialState})
   }
 
   setOperation = operation => {    
@@ -41,9 +46,12 @@ export default class App extends Component {
   }
 
   operaIgual = () => {
+    if (this.state.atualOperation === '')
+      return
+
     this.setState({
-      displayHistory: this.state.atualOperation === '' ? this.state.displayHistory : '',
-      displayValue: this.state.atualOperation === '' ? this.state.displayValue : this.calcula(),
+      displayHistory: '',
+      displayValue: this.calcula(),
       atualOperation: ''
     })
   }
